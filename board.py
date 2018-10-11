@@ -10,8 +10,8 @@ class TenBoard:
         self.blocks = [Block() for x in range(9)]
         self.owned_blocks = [set(), set()]  # [p1_owned, p2_owned]
 
-    def put(self, i, j, p):
-        self.blocks[i].put(j, p)
+    def put(self, p, i, j):
+        self.blocks[i].put(p, j)
         self.update_owner()
         self.print_board()
         return self.check_win()

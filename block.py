@@ -1,27 +1,27 @@
 class Block:
 
-    def __init__(self):
+    def __init__(self, n_player=2):
+        self._n_player = n_player
         self.owner = None
-        self.owned_cells = [set(), set()]
+        self.owned_cells = [set() for x in xrange(n_player)]
+        print self.owned_cells
 
-    def put(self, i, p):
-        self.owned_cells[p].add(i)
+    def put(self, player, cell):
+        self.owned_cells[player].add(cell)
         self.check_win()
 
     def check_win(self):
-
-        for i in range(2):
-            if self._check_player(self.owned_cells[i]):
-                self.owner = i
+        for p, cells in enumerate(self.owned_cells):
+            if self._check_player_win(cells):
+                self.owner = p
                 break
 
-    def _check_player(self, owned):
+    def _check_player_win(self, owned):
         # always check from smaller index to greater
-        for cell in [0,1,2,3,6]:
+        for cell in [0, 1, 2, 3, 6]:
             if cell in owned:
                 if self._check_win_cells(cell, owned):
                     return True
-
         return False
 
     def _check_win_cells(self, cell, owned):
@@ -39,20 +39,15 @@ class Block:
         return 6 in owned and 7 in owned and 8 in owned
 
     def to_string_array(self):
-
-        cells = [[str(self.owner) for y in range(3)] for x in range(3)]
         string_array = []  # contains three strings, each represents 1 row
-
-        if self.owner is None:
-            for i in range(3):
-                for j in range(3):
-                    if 3*i+j in self.owned_cells[0]:
-                        cells[i][j] = '0'
-                    elif 3*i+j in self.owned_cells[1]:
-                        cells[i][j] = '1'
-                    else:
-                        cells[i][j] = '.'
-        for row in cells:
+        if self.owner is not None:
+            print_board = [[str(self.owner) for y in xrange(3)] for x in xrange(3)]
+        else:
+            print_board = [['.' for y in xrange(3)] for x in xrange(3)]
+            for idx, cells in enumerate(self.owned_cells):
+                for c in cells:
+                    print_board[c/3][c%3] = str(idx)
+            
+        for row in print_board:
             string_array.append(' '.join(row))
-
         return string_array
